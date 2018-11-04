@@ -1,0 +1,33 @@
+---
+- name: Install Apache and Upload my web-site
+  hosts: all
+  become: yes
+
+  vars:
+    DB_HOST: localhost
+    DB_USER: SA
+    DB_PASSWORD: sup3r_passw0rd
+    DB_NAME: information_skima
+
+
+  tasks:
+  - block:
+      - name: "Install Apache"
+        apt: name=apache2 state=latest
+
+      - name: "Generate appsettings.json"
+        template: src=./web-site/appsettings.j2 dest=/var/www/html/appsettings.json mode=0555
+
+      - name: "Upload web-site"
+        copy: src=./web-site/ dest=/var/www/html mode=0555
+        notify: Restart Apache
+
+      - name: "Start service"
+        service: name=apache2 state=started enabled=yes
+
+    when: ansible_os_family == "Debian"
+
+  handlers:
+  - name: "Restart Apache"
+    service: name=apache2 state=restarted
+
