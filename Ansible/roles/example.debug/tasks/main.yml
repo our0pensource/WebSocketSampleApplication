@@ -1,0 +1,19 @@
+---
+# tasks file for example.debug
+
+- name: "print var 'ansible_user'"
+  debug:
+    var: ansible_user
+
+- set_fact: full_message="hello {{ ansible_user }}"
+
+- name: "print any text with variables"
+  debug:
+    msg: "{{ full_message }} from {{ ansible_host }}:{{ ansible_port }}"
+
+- name: "get uptime and save output to a variable"
+  shell: uptime
+  register: result_uptime
+- debug:
+    var: result_uptime.stdout
+
